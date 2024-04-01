@@ -26,8 +26,9 @@ def get_if_muted():
 
 def data_exists(data_path):
     if not os.path.exists(data_path):
-        data = {"message" : {"last_called" : get_timestanp(), "last_message_id" : 0, "volume" : get_volume_master()},
-                "mute" : {"state" : get_if_muted()}}
+        #data = {"message" : {"last_called" : get_timestanp(), "last_message_id" : 0, "volume" : get_volume_master()},
+        #        "mute" : {"state" : get_if_muted()}}
+        data = {"last_called" : get_timestanp(), "last_message_id" : 0, "volume" : get_volume_master(), "muted" : get_if_muted()}
         save_data(data)
 
 def save_data(data):
@@ -63,57 +64,57 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
     if args[1] == "raise":
         cli_command(f'amixer set Master {args[2]}+')
 
-        if get_timestanp() - data['message']['last_called'] <= standard_ttl_s:
-            return_data = notify(f'Volume raised from {data["message"]["volume"]} to {get_volume_master()}', data['message']['last_message_id'])
+        if get_timestanp() - data['last_called'] <= standard_ttl_s:
+            return_data = notify(f'Volume raised from {data["volume"]} to {get_volume_master()}', data['last_message_id'])
         else:
-            return_data = notify(f'Volume raised from {data["message"]["volume"]} to {get_volume_master()}')
+            return_data = notify(f'Volume raised from {data["volume"]} to {get_volume_master()}')
         # update the data
-        data['message']['volume'] = get_volume_master()
-        data['message']['last_message_id'] = return_data.strip() 
-        data['message']['last_called'] = get_timestanp()
+        data['volume'] = get_volume_master()
+        data['last_message_id'] = return_data.strip() 
+        data['last_called'] = get_timestanp()
         save_data(data)
 
     # do if argument lower
     elif args[1] == "lower":
         cli_command(f'amixer set Master {args[2]}-')
 
-        if get_timestanp() - data['message']['last_called'] <= standard_ttl_s:
-            return_data = notify(f'Volume lowered from {data["message"]["volume"]} to {get_volume_master()}', data['message']['last_message_id'])
+        if get_timestanp() - data['last_called'] <= standard_ttl_s:
+            return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}', data['last_message_id'])
         else:
-            return_data = notify(f'Volume lowered from {data["message"]["volume"]} to {get_volume_master()}')
+            return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}')
         # update the data
-        data['message']['volume'] = get_volume_master()
-        data['message']['last_message_id'] = return_data.strip()
-        data['message']['last_called'] = get_timestanp()
+        data['volume'] = get_volume_master()
+        data['last_message_id'] = return_data.strip()
+        data['last_called'] = get_timestanp()
         save_data(data)
 
     # do if argument mute
     elif args[1] == "mute":
-        if data['mute']['state']:
+        if data['muted']:
             cli_command('amixer set Master unmute')
             
-            if (get_timestanp() - data['message']['last_called'] <= standard_ttl_s):
-                return_data = notify('Unmuted', data['message']['last_message_id'])
+            if (get_timestanp() - data['last_called'] <= standard_ttl_s):
+                return_data = notify('Unmuted', data['last_message_id'])
             else:
                 return_data = notify('Unmuted')
 
             # update the data
-            data['message']['last_message_id'] = return_data.strip()
-            data['mute']['state'] = False
-            data['message']['last_called'] = get_timestanp()
+            data['last_message_id'] = return_data.strip()
+            data['muted'] = False
+            data['last_called'] = get_timestanp()
             save_data(data)
-        elif not data['mute']['state']:
+        elif not data['muted']:
             cli_command('amixer set Master mute')
             
-            if (get_timestanp() - data['message']['last_called'] <= standard_ttl_s):
-                return_data = notify('Muted', data['message']['last_message_id'])
+            if (get_timestanp() - data['last_called'] <= standard_ttl_s):
+                return_data = notify('Muted', data['last_message_id'])
             else:
                 return_data = notify('Muted')
 
             # update the data
-            data['message']['last_message_id'] = return_data.strip()
-            data['mute']['state'] = True
-            data['message']['last_called'] = get_timestanp()
+            data['last_message_id'] = return_data.strip()
+            data['muted'] = True
+            data['last_called'] = get_timestanp()
             save_data(data)
         else:
             notify("Error: Something went wrong.")
