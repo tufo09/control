@@ -3,10 +3,10 @@ import json
 import time
 import sys
 
-global name, standard_ttl, standard_ttl_s
+
 data_path = 'data.json'
 name = 'Volume Control'
-standard_ttl = 1000
+standard_ttl = 2500
 standard_ttl_s = standard_ttl / 1000
 
 def get_timestanp():
@@ -47,7 +47,7 @@ def notify(message="No message provided.", id=0, ttl=standard_ttl):
     print(return_data)
     return return_data
 
-def main():
+def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl_s=standard_ttl_s):
     args = sys.argv
     data = load_data(data_path)
     if len(args) == 1:
