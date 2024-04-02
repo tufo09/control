@@ -19,7 +19,7 @@ You can use this script from the command line as follows:
 To raise the volume: python main.py raise [amount]
 To lower the volume: python main.py lower [amount]
 To mute/unmute the volume: python main.py mute
-Replace [amount] with the desired volume change amount. You can use % Values or just normal numbers.
+Replace [amount] with the desired volume change amount. You can use % number values or just normal numbers.
 
 ### Dependencies
 This script requires Python 3 and the amixer command available on your system. It has been tested on Linux systems.
