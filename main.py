@@ -26,8 +26,6 @@ def get_if_muted():
 
 def data_exists(data_path):
     if not os.path.exists(data_path):
-        #data = {"message" : {"last_called" : get_timestanp(), "last_message_id" : 0, "volume" : get_volume_master()},
-        #        "mute" : {"state" : get_if_muted()}}
         data = {"last_called" : get_timestanp(), "last_message_id" : 0, "volume" : get_volume_master(), "muted" : get_if_muted()}
         save_data(data)
 
@@ -64,10 +62,11 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
     if args[1] == "raise":
         cli_command(f'amixer set Master {args[2]}+')
 
+
         if get_timestanp() - data['last_called'] <= standard_ttl_s:
-            return_data = notify(f'Volume raised from {data["volume"]} to {get_volume_master()}', data['last_message_id'])
+            return_data = notify(f'Volume raised from {data["volume"]} to {get_volume_master()}; Muted: {data["muted"]}', data['last_message_id'])
         else:
-            return_data = notify(f'Volume raised from {data["volume"]} to {get_volume_master()}')
+            return_data = notify(f'Volume raised from {data["volume"]} to {get_volume_master()}; Muted: {data["muted"]}')
         # update the data
         data['volume'] = get_volume_master()
         data['last_message_id'] = return_data.strip() 
@@ -79,9 +78,9 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
         cli_command(f'amixer set Master {args[2]}-')
 
         if get_timestanp() - data['last_called'] <= standard_ttl_s:
-            return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}', data['last_message_id'])
+            return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}; Muted: {data["muted"]}', data['last_message_id'])
         else:
-            return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}')
+            return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}; Muted: {data["muted"]}')
         # update the data
         data['volume'] = get_volume_master()
         data['last_message_id'] = return_data.strip()
@@ -94,9 +93,9 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
             cli_command('amixer set Master unmute')
             
             if (get_timestanp() - data['last_called'] <= standard_ttl_s):
-                return_data = notify('Unmuted', data['last_message_id'])
+                return_data = notify(f'Volume unmuted; Muted {data["muted"]}', data['last_message_id'])
             else:
-                return_data = notify('Unmuted')
+                return_data = notify(f'Volume unmuted; Muted {data["muted"]}')
 
             # update the data
             data['last_message_id'] = return_data.strip()
@@ -107,9 +106,9 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
             cli_command('amixer set Master mute')
             
             if (get_timestanp() - data['last_called'] <= standard_ttl_s):
-                return_data = notify('Muted', data['last_message_id'])
+                return_data = notify(f'Volume muted; Muted {data["muted"]}', data['last_message_id'])
             else:
-                return_data = notify('Muted')
+                return_data = notify(f'Volume muted; Muted {data["muted"]}')
 
             # update the data
             data['last_message_id'] = return_data.strip()
