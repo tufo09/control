@@ -91,6 +91,7 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
     elif args[1] == "mute":
         if data['muted']:
             cli_command('amixer set Master unmute')
+            data['muted'] = False
             
             if (get_timestanp() - data['last_called'] <= standard_ttl_s):
                 return_data = notify(f'Volume unmuted; Muted {data["muted"]}', data['last_message_id'])
@@ -99,12 +100,11 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
 
             # update the data
             data['last_message_id'] = return_data.strip()
-            data['muted'] = False
             data['last_called'] = get_timestanp()
             save_data(data)
         elif not data['muted']:
             cli_command('amixer set Master mute')
-            
+            data['muted'] = True
             if (get_timestanp() - data['last_called'] <= standard_ttl_s):
                 return_data = notify(f'Volume muted; Muted {data["muted"]}', data['last_message_id'])
             else:
@@ -112,10 +112,12 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
 
             # update the data
             data['last_message_id'] = return_data.strip()
-            data['muted'] = True
             data['last_called'] = get_timestanp()
             save_data(data)
         else:
             notify("Error: Something went wrong.")
 
-main()
+
+
+if __name__ == "__main__":
+    main()
