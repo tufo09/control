@@ -43,7 +43,6 @@ def cli_command(command):
 
 def notify(message="No message provided.", id=0, ttl=standard_ttl):
     return_data = os.popen(f'notify-send -t {ttl} -r {id} -p "{name}" "{message}"').read().strip()
-    print(return_data)
     return return_data
 
 def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl_s=standard_ttl_s):
@@ -54,7 +53,7 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
        return
     
     # check if the argument is valid
-    if not (args[1] == "raise" or args[1] == "lower" or args[1] == "mute"):
+    if not (args[1] == "raise" or args[1] == "lower" or args[1] == "mute" or args[1] == "set"):
         notify("Error: Invalid argument provided. Please provide a valid argument.")
         return
     
@@ -81,6 +80,19 @@ def main(data_path=data_path, name=name, standard_ttl=standard_ttl, standard_ttl
             return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}; Muted: {data["muted"]}', data['last_message_id'])
         else:
             return_data = notify(f'Volume lowered from {data["volume"]} to {get_volume_master()}; Muted: {data["muted"]}')
+        # update the data
+        data['volume'] = get_volume_master()
+        data['last_message_id'] = return_data.strip()
+        data['last_called'] = get_timestanp()
+        save_data(data)
+
+    elif args[1] == "set":
+        cli_command(f'amixer set Master {args[2]}')
+
+        if get_timestanp() - data['last_called'] <= standard_ttl_s:
+            return_data = notify(f'Volume set to {get_volume_master()}; Muted: {data["muted"]}', data['last_message_id'])
+        else:
+            return_data = notify(f'Volume set to {get_volume_master()}; Muted: {data["muted"]}')
         # update the data
         data['volume'] = get_volume_master()
         data['last_message_id'] = return_data.strip()
