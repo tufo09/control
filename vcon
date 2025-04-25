@@ -1,0 +1,4 @@
+#!/bin/bash
+amixer set Master "$1" >> /dev/null
+nVOL=$(amixer get Master | grep -oP '\d+(?=%)' | tr '\n' ' ' | awk '{print $1}')
+dunstify "Volume" "Volume set to  $nVOL%" -r 8000 -t 2500
